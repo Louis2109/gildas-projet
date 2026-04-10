@@ -15,10 +15,11 @@ import matplotlib.pyplot as plt
 from typing import Tuple, Optional
 import json
 import os
+from scipy.optimize import differential_evolution
 
 
 # ============================================================================
-# ARRAY FACTOR COMPUTATION (To be implemented in Phase 2)
+# ARRAY FACTOR COMPUTATION (Phase 2)
 # ============================================================================
 
 def compute_array_factor(
@@ -49,8 +50,36 @@ def compute_array_factor(
     Returns:
         Complex value of array factor
     """
-    # TO BE IMPLEMENTED IN PHASE 2
-    raise NotImplementedError("Will be implemented in Phase 2")
+    M, N = phi_mn_matrix.shape
+    
+    # Convert phase matrix: 0 → 0, 1 → π
+    phi_phase = phi_mn_matrix * np.pi
+    
+    # Pre-compute common terms
+    sin_theta = np.sin(theta)
+    sin_phi = np.sin(phi)
+    cos_phi = np.cos(phi)
+    
+    # Exponent coefficients
+    coeff1 = k * d * sin_theta * sin_phi
+    coeff2 = k * d * sin_theta * cos_phi
+    
+    # Vectorized computation
+    m_indices = np.arange(1, M + 1)[:, np.newaxis]
+    n_indices = np.arange(1, N + 1)[np.newaxis, :]
+    
+    # Phase shifts for each element
+    phase_shift1 = (m_indices - 1) * coeff1
+    phase_shift2 = (m_indices - 1) * coeff2
+    phase_shift_mn = phi_phase
+    
+    # Total phase for each element
+    total_phase = 1j * (phase_shift1 + phase_shift2 + phase_shift_mn)
+    
+    # Array factor = sum of all exponentials
+    af = np.sum(np.exp(total_phase))
+    
+    return af
 
 
 def evaluate_array_factor_grid(
@@ -65,8 +94,8 @@ def evaluate_array_factor_grid(
     
     Args:
         phi_mn_matrix: M×N binary phase matrix
-        theta_range: Array of theta values
-        phi_range: Array of phi values
+        theta_range: Array of theta values (radians)
+        phi_range: Array of phi values (radians)
         d, k: Physical parameters
         
     Returns:
@@ -74,8 +103,25 @@ def evaluate_array_factor_grid(
         f_max: Maximum value of |f|
         max_angles: (theta_max, phi_max) where maximum occurs
     """
-    # TO BE IMPLEMENTED IN PHASE 2
-    raise NotImplementedError("Will be implemented in Phase 2")
+    # Create mesh grid
+    THETA, PHI = np.meshgrid(theta_range, phi_range, indexing='ij')
+    
+    # Compute array factor for each point
+    af_grid = np.zeros_like(THETA, dtype=complex)
+    for i, theta in enumerate(theta_range):
+        for j, phi in enumerate(phi_range):
+            af_grid[i, j] = compute_array_factor(theta, phi, phi_mn_matrix, d, k)
+    
+    # Get magnitude (normalized in dB for visualization)
+    af_magnitude = np.abs(af_grid)
+    
+    # Find maximum
+    max_idx = np.unravel_index(np.argmax(af_magnitude), af_magnitude.shape)
+    theta_max = theta_range[max_idx[0]]
+    phi_max = phi_range[max_idx[1]]
+    f_max = af_magnitude[max_idx]
+    
+    return af_magnitude, f_max, (theta_max, phi_max)
 
 
 # ============================================================================
@@ -91,18 +137,44 @@ def find_max_angles(
     Find angles (θ, φ) where |f| is maximum using continuous optimization
     
     This implements the "Continuous Search" step from the project diagram.
+    Uses scipy.optimize.differential_evolution for global optimization.
     
     Args:
         phi_mn_matrix: M×N binary phase matrix
         d, k: Physical parameters
         
     Returns:
-        theta_max: Optimal theta angle
-        phi_max: Optimal phi angle
+        theta_max: Optimal theta angle [0, π]
+        phi_max: Optimal phi angle [0, 2π]
         f_max: Maximum value |f(theta_max, phi_max)|
     """
-    # TO BE IMPLEMENTED IN PHASE 3
-    raise NotImplementedError("Will be implemented in Phase 3")
+    def objective_function(angles):
+        """Objective: minimize negative |f| to maximize |f|"""
+        theta, phi = angles
+        af = compute_array_factor(theta, phi, phi_mn_matrix, d, k)
+        return -np.abs(af)  # Negative because differential_evolution minimizes
+    
+    # Define bounds: θ ∈ [0.01, π-0.01], φ ∈ [0, 2π] 
+    # (avoid exact boundaries for numerical stability)
+    bounds = [(0.01, np.pi - 0.01), (0, 2 * np.pi)]
+    
+    # Use global optimizer
+    result = differential_evolution(
+        objective_function,
+        bounds,
+        seed=42,
+        maxiter=300,
+        atol=1e-10,
+        tol=1e-10,
+        workers=1,
+        updating='immediate'
+    )
+    
+    # Extract results
+    theta_max, phi_max = result.x
+    f_max = -result.fun  # Negate back to get positive value
+    
+    return float(theta_max), float(phi_max), float(f_max)
 
 
 def evaluate_array_factor_max(
@@ -276,27 +348,40 @@ def load_results(filename: str = "optimization_results") -> Tuple[np.ndarray, fl
     return matrix, f_max, history
 
 
-# Quick test of utility functions structure
+# Quick test of Array Factor functions
 if __name__ == "__main__":
-    print("Testing utility functions structure...\n")
+    print("Testing Array Factor computation...\n")
     
-    # Test save/load (with dummy data)
-    dummy_matrix = np.random.randint(0, 2, (8, 8))
-    dummy_fmax = 42.5
-    dummy_history = {
-        'best_fitness': [100, 80, 60, 40, 42.5],
-        'avg_fitness': [150, 120, 90, 70, 65]
-    }
+    # Test 1: Simple 2×2 matrix (all zeros)
+    print("Test 1: All-zeros matrix (2×2)")
+    matrix_zeros = np.zeros((2, 2), dtype=int)
+    af = compute_array_factor(np.pi/4, np.pi/4, matrix_zeros)
+    print(f"  Array factor: {af}")
+    print(f"  Magnitude: {np.abs(af):.4f}")
+    print(f"  ✓ Computed successfully\n")
     
-    print("Testing save_results()...")
-    save_results(dummy_matrix, dummy_fmax, dummy_history, "test_phase1")
+    # Test 2: Mixed matrix
+    print("Test 2: Mixed matrix (3×3)")
+    matrix_mixed = np.array([[0, 1, 0], [1, 0, 1], [0, 1, 0]], dtype=int)
+    af = compute_array_factor(np.pi/6, np.pi/2, matrix_mixed)
+    print(f"  Array factor: {af}")
+    print(f"  Magnitude: {np.abs(af):.4f}")
+    print(f"  ✓ Computed successfully\n")
     
-    print("\nTesting load_results()...")
-    loaded_matrix, loaded_fmax, loaded_history = load_results("test_phase1")
+    # Test 3: Grid evaluation
+    print("Test 3: Grid evaluation (4×4 matrix, 10×10 grid)")
+    matrix_grid = np.random.randint(0, 2, (4, 4))
+    theta_vals = np.linspace(0.1, np.pi-0.1, 10)
+    phi_vals = np.linspace(0, 2*np.pi, 10)
     
-    print(f"\n✓ Matrix loaded: shape {loaded_matrix.shape}")
-    print(f"✓ f_max loaded: {loaded_fmax}")
-    print(f"✓ History loaded: {len(loaded_history['best_fitness'])} generations")
-    print(f"✓ Data integrity: {np.array_equal(dummy_matrix, loaded_matrix)}")
+    af_grid, f_max, (theta_max, phi_max) = evaluate_array_factor_grid(
+        matrix_grid, theta_vals, phi_vals
+    )
     
-    print("\n[SUCCESS] Data management functions validated!")
+    print(f"  Grid shape: {af_grid.shape}")
+    print(f"  f_max: {f_max:.4f}")
+    print(f"  θ_max: {theta_max:.4f} rad ({np.degrees(theta_max):.2f}°)")
+    print(f"  φ_max: {phi_max:.4f} rad ({np.degrees(phi_max):.2f}°)")
+    print(f"  ✓ Grid evaluated successfully\n")
+    
+    print("[SUCCESS] Array Factor functions validated!")

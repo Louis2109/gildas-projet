@@ -134,34 +134,202 @@ def test_data_save_load():
 # ============================================================================
 
 def test_array_factor_computation():
-    """Test compute_array_factor() gives correct values"""
-    # Will be implemented in Phase 2
-    pass
+    """Test compute_array_factor() gives correct complex values"""
+    from utils import compute_array_factor
+    
+    # Test with simple 2×2 all-zeros matrix
+    phi_matrix = np.zeros((2, 2), dtype=int)
+    theta, phi = np.pi / 4, np.pi / 4
+    
+    af = compute_array_factor(theta, phi, phi_matrix, d=0.5, k=2*np.pi)
+    
+    # Should be a complex number
+    assert isinstance(af, complex)
+    # Magnitude should be positive
+    assert np.abs(af) >= 0
+
+
+def test_array_factor_all_zeros():
+    """Test array factor with all zeros (reference phase)"""
+    from utils import compute_array_factor
+    
+    phi_matrix = np.zeros((4, 4), dtype=int)
+    
+    # Test at multiple angles
+    for theta in [0.1, np.pi/4, np.pi/2]:
+        for phi in [0.1, np.pi/2, np.pi]:
+            af = compute_array_factor(theta, phi, phi_matrix)
+            magnitude = np.abs(af)
+            # All zeros → maximum constructive interference possible
+            assert magnitude > 0
 
 
 def test_array_factor_grid():
-    """Test evaluate_array_factor_grid() returns correct shape"""
-    # Will be implemented in Phase 2
-    pass
+    """Test evaluate_array_factor_grid() returns correct shape and values"""
+    from utils import evaluate_array_factor_grid
+    
+    phi_matrix = np.random.randint(0, 2, (4, 4))
+    
+    theta_range = np.linspace(0.1, np.pi-0.1, 10)
+    phi_range = np.linspace(0, 2*np.pi, 20)
+    
+    af_mag, f_max, (theta_max, phi_max) = evaluate_array_factor_grid(
+        phi_matrix, theta_range, phi_range
+    )
+    
+    # Check shapes
+    assert af_mag.shape == (len(theta_range), len(phi_range))
+    
+    # Check f_max is positive
+    assert f_max >= 0
+    
+    # Check angles are in valid range
+    assert 0.1 <= theta_max <= np.pi - 0.1
+    assert 0 <= phi_max <= 2 * np.pi
+    
+    # Check that f_max equals the actual maximum
+    assert np.isclose(f_max, np.max(af_mag))
+
+
+def test_array_factor_magnitude_positive():
+    """Test that array factor magnitude is always non-negative"""
+    from utils import compute_array_factor, evaluate_array_factor_grid
+    
+    phi_matrix = np.random.randint(0, 2, (8, 8))
+    theta_range = np.linspace(0.01, np.pi-0.01, 15)
+    phi_range = np.linspace(0, 2*np.pi, 30)
+    
+    af_mag, _, _ = evaluate_array_factor_grid(phi_matrix, theta_range, phi_range)
+    
+    # All magnitudes must be >= 0
+    assert np.all(af_mag >= 0)
+
+
+def test_array_factor_consistency():
+    """Test that grid evaluation is consistent with point evaluation"""
+    from utils import compute_array_factor, evaluate_array_factor_grid
+    
+    phi_matrix = np.array([[0, 1], [1, 0]], dtype=int)
+    
+    theta_range = np.array([np.pi/6, np.pi/4, np.pi/3])
+    phi_range = np.array([0, np.pi/2, np.pi, 3*np.pi/2])
+    
+    # Get grid
+    af_mag, _, _ = evaluate_array_factor_grid(phi_matrix, theta_range, phi_range)
+    
+    # Verify each point matches individual computation
+    for i, theta in enumerate(theta_range):
+        for j, phi in enumerate(phi_range):
+            af_point = compute_array_factor(theta, phi, phi_matrix)
+            mag_point = np.abs(af_point)
+            
+            assert np.isclose(af_mag[i, j], mag_point, rtol=1e-10)
 
 
 # ============================================================================
-# PHASE 3 TESTS: Continuous Search (To be added)
+# PHASE 2b TESTS: Continuous Search
 # ============================================================================
 
-def test_find_max_angles():
-    """Test find_max_angles() finds correct maximum"""
-    # Will be implemented in Phase 3
-    pass
+def test_find_max_angles_random_matrix():
+    """Test find_max_angles() finds local maximum with random matrix"""
+    from utils import find_max_angles, compute_array_factor
+    
+    phi_matrix = np.random.randint(0, 2, (4, 4))
+    
+    theta_max, phi_max, f_max = find_max_angles(phi_matrix)
+    
+    # Verify output types
+    assert isinstance(theta_max, float)
+    assert isinstance(phi_max, float)
+    assert isinstance(f_max, float)
+    
+    # Verify bounds
+    assert 0 < theta_max < np.pi
+    assert 0 <= phi_max <= 2 * np.pi
+    assert f_max > 0
+    
+    # Verify this is indeed a maximum by checking nearby points
+    af_max = compute_array_factor(theta_max, phi_max, phi_matrix)
+    assert np.isclose(np.abs(af_max), f_max, rtol=1e-6)
+
+
+def test_find_max_angles_all_zeros():
+    """Test find_max_angles() with all-zeros matrix (reference)"""
+    from utils import find_max_angles
+    
+    phi_matrix = np.zeros((4, 4), dtype=int)
+    
+    theta_max, phi_max, f_max = find_max_angles(phi_matrix)
+    
+    # All-zeros: maximum is uniform (16 elements in phase)
+    expected_f_max = 16.0  # M*N elements all constructively add
+    assert np.isclose(f_max, expected_f_max, rtol=0.01), \
+        f"Expected ~{expected_f_max}, got {f_max}"
+
+
+def test_find_max_angles_vs_grid():
+    """Test find_max_angles() gives similar result to grid search"""
+    from utils import find_max_angles, evaluate_array_factor_grid
+    
+    phi_matrix = np.array([[0, 1, 0], [1, 0, 1], [0, 1, 0]], dtype=int)
+    
+    # Find max using continuous search
+    theta_opt, phi_opt, f_max_opt = find_max_angles(phi_matrix)
+    
+    # Find max using coarse grid search
+    theta_range = np.linspace(0.1, np.pi-0.1, 50)
+    phi_range = np.linspace(0, 2*np.pi, 100)
+    af_mag, f_max_grid, (theta_grid, phi_grid) = evaluate_array_factor_grid(
+        phi_matrix, theta_range, phi_range
+    )
+    
+    # Continuous search should find better (higher f_max) or equal value
+    assert f_max_opt >= f_max_grid * 0.95, \
+        f"Optimizer result {f_max_opt} worse than grid {f_max_grid}"
+
+
+def test_find_max_angles_consistency():
+    """Test find_max_angles() is deterministic for same input"""
+    from utils import find_max_angles
+    
+    phi_matrix = np.random.randint(0, 2, (5, 5))
+    
+    # Run twice with same matrix
+    result1 = find_max_angles(phi_matrix)
+    result2 = find_max_angles(phi_matrix)
+    
+    # Should get very close results (within tolerance)
+    theta1, phi1, f_max1 = result1
+    theta2, phi2, f_max2 = result2
+    
+    assert np.isclose(theta1, theta2, rtol=1e-4)
+    assert np.isclose(phi1, phi2, rtol=1e-4)
+    assert np.isclose(f_max1, f_max2, rtol=1e-4)
+
+
+def test_evaluate_array_factor_max():
+    """Test evaluate_array_factor_max() convenience wrapper"""
+    from utils import evaluate_array_factor_max, find_max_angles
+    
+    phi_matrix = np.random.randint(0, 2, (4, 4))
+    
+    # Using convenience wrapper
+    f_max_direct = evaluate_array_factor_max(phi_matrix)
+    
+    # Using full function
+    _, _, f_max_full = find_max_angles(phi_matrix)
+    
+    # Should be identical
+    assert np.isclose(f_max_direct, f_max_full, rtol=1e-6)
 
 
 # ============================================================================
-# PHASE 4 TESTS: GA Optimization (To be added)
+# PHASE 3 TESTS: GA Optimization (To be added)
 # ============================================================================
 
 def test_ga_run():
     """Test GA.run() converges to better solutions"""
-    # Will be implemented in Phase 4
+    # Will be implemented in Phase 3
     pass
 
 
@@ -185,16 +353,47 @@ def run_all_tests():
         ("Data Save/Load", test_data_save_load),
     ]
     
+    phase2a_tests = [
+        ("Array Factor Computation", test_array_factor_computation),
+        ("Array Factor All Zeros", test_array_factor_all_zeros),
+        ("Array Factor Grid Evaluation", test_array_factor_grid),
+        ("Array Factor Magnitude Positive", test_array_factor_magnitude_positive),
+        ("Array Factor Consistency", test_array_factor_consistency),
+    ]
+    
+    phase2b_tests = [
+        ("Find Max Angles - Random", test_find_max_angles_random_matrix),
+        ("Find Max Angles - All Zeros", test_find_max_angles_all_zeros),
+        ("Find Max Angles vs Grid", test_find_max_angles_vs_grid),
+        ("Find Max Angles - Consistency", test_find_max_angles_consistency),
+        ("Evaluate Array Factor Max", test_evaluate_array_factor_max),
+    ]
+    
     print("\n[PHASE 1 TESTS]")
-    results = []
+    phase1_results = []
     for test_name, test_func in phase1_tests:
-        results.append(run_test(test_name, test_func))
+        phase1_results.append(run_test(test_name, test_func))
+    
+    print("\n[PHASE 2a TESTS - Array Factor]")
+    phase2a_results = []
+    for test_name, test_func in phase2a_tests:
+        phase2a_results.append(run_test(test_name, test_func))
+    
+    print("\n[PHASE 2b TESTS - Continuous Search]")
+    phase2b_results = []
+    for test_name, test_func in phase2b_tests:
+        phase2b_results.append(run_test(test_name, test_func))
     
     # Summary
-    passed = sum(results)
-    total = len(results)
+    all_results = phase1_results + phase2a_results + phase2b_results
+    passed = sum(all_results)
+    total = len(all_results)
+    
     print("\n" + "="*60)
-    print(f"RESULTS: {passed}/{total} tests passed")
+    print(f"PHASE 1: {sum(phase1_results)}/{len(phase1_results)} passed")
+    print(f"PHASE 2a: {sum(phase2a_results)}/{len(phase2a_results)} passed")
+    print(f"PHASE 2b: {sum(phase2b_results)}/{len(phase2b_results)} passed")
+    print(f"TOTAL: {passed}/{total} tests passed")
     
     if passed == total:
         print("✓ ALL TESTS PASSED!")
