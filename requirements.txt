@@ -1,0 +1,17 @@
+# Python Dependencies for Antenna Array Optimizer
+# ================================================
+
+# Core scientific computing
+numpy>=1.24.0
+
+# Optimization library (for continuous search in Phase 3)
+scipy>=1.10.0
+
+# Plotting and visualization
+matplotlib>=3.7.0
+
+# Optional: Enhanced progress bars
+# tqdm>=4.65.0
+
+# Optional: For parallel processing (Phase 4 optimization)
+# joblib>=1.2.0
