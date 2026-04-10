@@ -207,15 +207,74 @@ def plot_array_factor_2d(
     save_path: Optional[str] = None
 ) -> None:
     """
-    Plot 2D cuts of Array Factor (θ or φ fixed)
+    Plot 2D cuts of Array Factor (1D slices at optimal angles)
+    
+    Creates two side-by-side plots:
+    - Left: |f(θ)| vs θ  (with φ = φ_opt)
+    - Right: |f(φ)| vs φ (with θ = θ_opt)
+    
+    Both slices pass through the maximum of the Array Factor.
     
     Args:
         phi_mn_matrix: M×N binary phase matrix
         d, k: Physical parameters
         save_path: Path to save figure (optional)
     """
-    # TO BE IMPLEMENTED IN PHASE 5
-    raise NotImplementedError("Will be implemented in Phase 5")
+    # Find optimal angles
+    theta_opt, phi_opt, f_max = find_max_angles(phi_mn_matrix, d, k)
+    
+    # Create angle ranges for 1D slices
+    theta_range = np.linspace(0.01, np.pi - 0.01, 200)
+    phi_range = np.linspace(0, 2 * np.pi, 360)
+    
+    # Compute 1D slices
+    af_theta_slice = np.array([
+        np.abs(compute_array_factor(theta, phi_opt, phi_mn_matrix, d, k))
+        for theta in theta_range
+    ])
+    
+    af_phi_slice = np.array([
+        np.abs(compute_array_factor(theta_opt, phi, phi_mn_matrix, d, k))
+        for phi in phi_range
+    ])
+    
+    # Create figure with two subplots
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
+    
+    # Plot 1: |f(θ)| vs θ (φ fixed at φ_opt)
+    ax1.plot(np.degrees(theta_range), af_theta_slice, 'b-', linewidth=2, label='|f(θ)|')
+    ax1.axvline(np.degrees(theta_opt), color='r', linestyle='--', linewidth=2, 
+                label=f'θ_opt = {np.degrees(theta_opt):.2f}°')
+    ax1.scatter([np.degrees(theta_opt)], [f_max], color='r', s=100, zorder=5, 
+                label=f'f_max = {f_max:.4f}')
+    ax1.set_xlabel('θ (degrees)', fontsize=11)
+    ax1.set_ylabel('|f(θ, φ_opt)|', fontsize=11)
+    ax1.set_title(f'Array Factor vs Elevation Angle\n(φ fixed at φ_opt = {np.degrees(phi_opt):.2f}°)', 
+                  fontsize=11)
+    ax1.grid(True, alpha=0.3)
+    ax1.legend(fontsize=10)
+    
+    # Plot 2: |f(φ)| vs φ (θ fixed at θ_opt)
+    ax2.plot(np.degrees(phi_range), af_phi_slice, 'g-', linewidth=2, label='|f(φ)|')
+    ax2.axvline(np.degrees(phi_opt), color='r', linestyle='--', linewidth=2, 
+                label=f'φ_opt = {np.degrees(phi_opt):.2f}°')
+    ax2.scatter([np.degrees(phi_opt)], [f_max], color='r', s=100, zorder=5, 
+                label=f'f_max = {f_max:.4f}')
+    ax2.set_xlabel('φ (degrees)', fontsize=11)
+    ax2.set_ylabel('|f(θ_opt, φ)|', fontsize=11)
+    ax2.set_title(f'Array Factor vs Azimuth Angle\n(θ fixed at θ_opt = {np.degrees(theta_opt):.2f}°)', 
+                  fontsize=11)
+    ax2.grid(True, alpha=0.3)
+    ax2.legend(fontsize=10)
+    
+    plt.tight_layout()
+    
+    # Save if path provided
+    if save_path:
+        os.makedirs(os.path.dirname(save_path) if os.path.dirname(save_path) else '.', exist_ok=True)
+        plt.savefig(save_path, dpi=150, bbox_inches='tight')
+    
+    plt.close()
 
 
 def plot_array_factor_3d(

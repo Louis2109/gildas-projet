@@ -324,6 +324,95 @@ def test_evaluate_array_factor_max():
 
 
 # ============================================================================
+# PHASE 2c TESTS: Visualization 2D
+# ============================================================================
+
+def test_plot_array_factor_2d_creates_file():
+    """Test that plot_array_factor_2d creates a PNG file"""
+    from utils import plot_array_factor_2d
+    import os
+    
+    phi_matrix = np.random.randint(0, 2, (4, 4))
+    save_path = "results/plots/test_visualization.png"
+    
+    # Remove file if it exists
+    if os.path.exists(save_path):
+        os.remove(save_path)
+    
+    # Generate plot
+    plot_array_factor_2d(phi_matrix, save_path=save_path)
+    
+    # Verify file was created
+    assert os.path.exists(save_path), f"Plot file not created at {save_path}"
+    assert os.path.getsize(save_path) > 0, "Plot file is empty"
+
+
+def test_plot_array_factor_2d_no_error():
+    """Test that plot_array_factor_2d runs without error"""
+    from utils import plot_array_factor_2d
+    
+    phi_matrix = np.array([[0, 1], [1, 0]], dtype=int)
+    
+    # Should complete without raising exception
+    try:
+        plot_array_factor_2d(phi_matrix)
+    except Exception as e:
+        pytest.fail(f"plot_array_factor_2d raised exception: {e}")
+
+
+def test_plot_array_factor_2d_all_zeros():
+    """Test plot with all-zeros matrix (maximum phase alignment)"""
+    from utils import plot_array_factor_2d
+    import os
+    
+    phi_matrix = np.zeros((4, 4), dtype=int)
+    save_path = "results/plots/test_all_zeros.png"
+    
+    if os.path.exists(save_path):
+        os.remove(save_path)
+    
+    plot_array_factor_2d(phi_matrix, save_path=save_path)
+    
+    assert os.path.exists(save_path)
+    assert os.path.getsize(save_path) > 1000, "Plot should have reasonable file size"
+
+
+def test_plot_array_factor_2d_all_ones():
+    """Test plot with all-ones matrix (π phase shift on all elements)"""
+    from utils import plot_array_factor_2d
+    import os
+    
+    phi_matrix = np.ones((4, 4), dtype=int)
+    save_path = "results/plots/test_all_ones.png"
+    
+    if os.path.exists(save_path):
+        os.remove(save_path)
+    
+    plot_array_factor_2d(phi_matrix, save_path=save_path)
+    
+    assert os.path.exists(save_path)
+    assert os.path.getsize(save_path) > 1000
+
+
+def test_plot_array_factor_2d_creates_plots_directory():
+    """Test that plots directory is created automatically"""
+    from utils import plot_array_factor_2d
+    import os
+    
+    phi_matrix = np.random.randint(0, 2, (3, 3))
+    save_path = "results/plots/test_auto_dir.png"
+    
+    # Remove directory if exists
+    plots_dir = "results/plots"
+    
+    plot_array_factor_2d(phi_matrix, save_path=save_path)
+    
+    # Verify directory and file were created
+    assert os.path.exists(plots_dir), "plots directory not created"
+    assert os.path.exists(save_path), "plot file not created"
+
+
+# ============================================================================
 # PHASE 3 TESTS: GA Optimization (To be added)
 # ============================================================================
 
@@ -369,6 +458,14 @@ def run_all_tests():
         ("Evaluate Array Factor Max", test_evaluate_array_factor_max),
     ]
     
+    phase2c_tests = [
+        ("Plot 2D - Creates File", test_plot_array_factor_2d_creates_file),
+        ("Plot 2D - No Error", test_plot_array_factor_2d_no_error),
+        ("Plot 2D - All Zeros", test_plot_array_factor_2d_all_zeros),
+        ("Plot 2D - All Ones", test_plot_array_factor_2d_all_ones),
+        ("Plot 2D - Create Directory", test_plot_array_factor_2d_creates_plots_directory),
+    ]
+    
     print("\n[PHASE 1 TESTS]")
     phase1_results = []
     for test_name, test_func in phase1_tests:
@@ -384,8 +481,13 @@ def run_all_tests():
     for test_name, test_func in phase2b_tests:
         phase2b_results.append(run_test(test_name, test_func))
     
+    print("\n[PHASE 2c TESTS - Visualization 2D]")
+    phase2c_results = []
+    for test_name, test_func in phase2c_tests:
+        phase2c_results.append(run_test(test_name, test_func))
+    
     # Summary
-    all_results = phase1_results + phase2a_results + phase2b_results
+    all_results = phase1_results + phase2a_results + phase2b_results + phase2c_results
     passed = sum(all_results)
     total = len(all_results)
     
@@ -393,6 +495,7 @@ def run_all_tests():
     print(f"PHASE 1: {sum(phase1_results)}/{len(phase1_results)} passed")
     print(f"PHASE 2a: {sum(phase2a_results)}/{len(phase2a_results)} passed")
     print(f"PHASE 2b: {sum(phase2b_results)}/{len(phase2b_results)} passed")
+    print(f"PHASE 2c: {sum(phase2c_results)}/{len(phase2c_results)} passed")
     print(f"TOTAL: {passed}/{total} tests passed")
     
     if passed == total:

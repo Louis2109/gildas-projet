@@ -74,21 +74,21 @@ pip install -r requirements.txt
 
 ### Exécution de l'optimisation
 ```bash
-python antenna_optimizer.py
+python3 antenna_optimizer.py
 ```
 
 ### Exécution des tests
 ```bash
-python test_antenna.py
+python3 test_antenna.py
 ```
 
 ### Test des composants individuels
 ```bash
 # Tester la structure GA
-python genetic_algorithm.py
+python3 genetic_algorithm.py
 
 # Tester les utilitaires
-python utils.py
+python3 utils.py
 ```
 
 ---
@@ -99,29 +99,37 @@ python utils.py
 - [x] Structure des fichiers
 - [x] Classe GA de base
 - [x] Fonctions utilitaires (squelettes)
-- [x] Suite de tests
+- [x] Suite de tests (7/7 passing)
 - [x] Gestion de données (save/load)
 
-### 🔄 Phase 2 : Calcul du Array Factor (En cours)
-- [ ] Implémentation de `compute_array_factor()`
-- [ ] Évaluation sur grille 2D
+### ✅ Phase 2a : Calcul du Array Factor (Complete)
+- [x] Implémentation de `compute_array_factor()` - Vectorisée NumPy
+- [x] Évaluation sur grille 2D avec `evaluate_array_factor_grid()`
+- [x] Tests de validation (5/5 passing)
+- [x] Démonstration dans antenna_optimizer.py
+
+### ✅ Phase 2b : Recherche Continue (Complete)
+- [x] Optimisation continue avec scipy.optimize.differential_evolution
+- [x] Fonction `find_max_angles()` - Trouve θ,φ optimal
+- [x] `evaluate_array_factor_max()` - Wrapper de commodité
+- [x] Tests de convergence et déterminisme (5/5 passing)
+
+### 🔄 Phase 2c : Visualisation 2D (En cours)
+- [ ] Implémentation de `plot_array_factor_2d()` avec Matplotlib
+- [ ] 2D cuts : |f(θ)| vs θ ou |f(φ)| vs φ
+- [ ] Export PNG dans results/plots/
 - [ ] Tests de validation
-- [ ] Visualisation 2D
 
-### 🔄 Phase 3 : Recherche Continue (À venir)
-- [ ] Optimisation continue (scipy)
-- [ ] Fonction `find_max_angles()`
-- [ ] Tests de convergence
-
-### 🔄 Phase 4 : Optimisation GA (À venir)
+### ⏳ Phase 3 : Optimisation GA (À venir)
 - [ ] Fonction fitness complète
-- [ ] Boucle principale GA
+- [ ] Boucle principale GA.run()
+- [ ] Convergence tracking
 - [ ] Tests d'optimisation
 
-### 🔄 Phase 5 : Visualisations (À venir)
-- [ ] Graphiques 2D et 3D
-- [ ] Comparaisons avant/après
-- [ ] Courbes de convergence
+### ⏳ Phase 4 : Visualisations Avancées (À venir)
+- [ ] Graphiques 3D sphériques
+- [ ] Comparaisons avant/après (side-by-side)
+- [ ] Courbes de convergence GA
 
 ---
 
@@ -164,15 +172,24 @@ Taux de croisement: 0.7
 
 ## 🧪 Tests
 
-La suite de tests valide :
+**PHASE 1 (7/7 tests ✓):**
 - ✓ Initialisation de la classe GA
 - ✓ Création de population
 - ✓ Conversion chromosome ↔ matrice
 - ✓ Opérateurs génétiques (sélection, croisement, mutation)
 - ✓ Sauvegarde/chargement de données
-- ⏳ Calcul du Array Factor (Phase 2)
-- ⏳ Recherche continue (Phase 3)
-- ⏳ Convergence du GA (Phase 4)
+
+**PHASE 2a (5/5 tests ✓):**
+- ✓ Calcul Array Factor single-point
+- ✓ Évaluation grille 2D
+- ✓ Cas tests (all-zeros, magnitude, consistency)
+
+**PHASE 2b (5/5 tests ✓):**
+- ✓ Recherche continue (find_max_angles)
+- ✓ Déterminisme et convergence
+- ✓ Comparaison avec grid search
+
+**TOTAL: 17/17 tests passing ✓**
 
 **Exécuter tous les tests :**
 ```bash
@@ -204,7 +221,9 @@ Projet académique - Usage éducatif uniquement
 
 ## 🔄 Statut du Projet
 
-**Phase actuelle :** Phase 1 ✅ Complete  
-**Prochaine étape :** Phase 2 - Implémentation du Array Factor
+**Phase actuelle :** Phase 2c - Visualisation 2D 🔄  
+**Progression :** 60% (Phase 1, 2a, 2b complètes / 5 phases totales)  
+**Tests globaux :** 17/17 passing ✓  
+**Workflow:** Code (Copilot) → Test (Utilisateur) → Validate → Commit
 
-**Dernière mise à jour :** 4 Mars 2026
+**Dernière mise à jour :** 10 Avril 2026

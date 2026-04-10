@@ -1,0 +1,17 @@
+{
+  "f_max": 42.5,
+  "matrix_shape": [
+    8,
+    8
+  ],
+  "best_fitness_history": [
+    100.0,
+    90.0,
+    80.0
+  ],
+  "avg_fitness_history": [
+    120.0,
+    110.0,
+    100.0
+  ]
+}
