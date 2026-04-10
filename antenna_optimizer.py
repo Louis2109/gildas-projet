@@ -235,9 +235,14 @@ def main():
     matrix_random, test_matrix = test_continuous_search()
     
     print("\n[Phase 2b Complete] Continuous Search optimization verified.")
+    
+    # Phase 2c: Test Visualization
+    plot_path, plot_path_zeros, plot_path_ones = test_visualization()
+    
+    print("\n[Phase 2c Complete] 2D Visualization generated.")
     print("\nNext phases:")
-    print("  - Phase 2c: Visualization (plot Array Factor pattern)")
     print("  - Phase 3: Genetic Algorithm Optimization Loop")
+    print("  - Phase 4: Convergence visualization and optimization results")
 
 
 if __name__ == "__main__":

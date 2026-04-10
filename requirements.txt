@@ -10,8 +10,11 @@ scipy>=1.10.0
 # Plotting and visualization
 matplotlib>=3.7.0
 
+# Testing framework
+pytest>=9.0.0
+
 # Optional: Enhanced progress bars
-# tqdm>=4.65.0
+ tqdm>=4.65.0
 
 # Optional: For parallel processing (Phase 4 optimization)
-# joblib>=1.2.0
+ joblib>=1.2.0

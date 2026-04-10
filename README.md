@@ -114,11 +114,12 @@ python3 utils.py
 - [x] `evaluate_array_factor_max()` - Wrapper de commodité
 - [x] Tests de convergence et déterminisme (5/5 passing)
 
-### 🔄 Phase 2c : Visualisation 2D (En cours)
-- [ ] Implémentation de `plot_array_factor_2d()` avec Matplotlib
-- [ ] 2D cuts : |f(θ)| vs θ ou |f(φ)| vs φ
-- [ ] Export PNG dans results/plots/
-- [ ] Tests de validation
+### 🔄 Phase 2c : Visualisation 2D (Complete)
+- [x] Implémentation de `plot_array_factor_2d()` avec Matplotlib
+- [x] 2D cuts : |f(θ)| vs θ et |f(φ)| vs φ
+- [x] Export PNG dans results/plots/
+- [x] Tests de validation (5/5 passing)
+**Tests:** 5/5 passing ✓
 
 ### ⏳ Phase 3 : Optimisation GA (À venir)
 - [ ] Fonction fitness complète
@@ -189,7 +190,13 @@ Taux de croisement: 0.7
 - ✓ Déterminisme et convergence
 - ✓ Comparaison avec grid search
 
-**TOTAL: 17/17 tests passing ✓**
+**PHASE 2c (5/5 tests ✓):**
+- ✓ Création fichiers PNG
+- ✓ Plots sans erreurs
+- ✓ Cas spéciaux (all-zeros, all-ones)
+- ✓ Auto-création répertoires
+
+**TOTAL: 22/22 tests passing ✓**
 
 **Exécuter tous les tests :**
 ```bash
@@ -221,9 +228,9 @@ Projet académique - Usage éducatif uniquement
 
 ## 🔄 Statut du Projet
 
-**Phase actuelle :** Phase 2c - Visualisation 2D 🔄  
-**Progression :** 60% (Phase 1, 2a, 2b complètes / 5 phases totales)  
-**Tests globaux :** 17/17 passing ✓  
+**Phase actuelle :** Phase 3 - Algorithme Génétique Optimization Loop 🔄  
+**Progression :** 75% (Phase 1, 2a, 2b, 2c complètes / 4 phases restantes)  
+**Tests globaux :** 22/22 passing ✓  
 **Workflow:** Code (Copilot) → Test (Utilisateur) → Validate → Commit
 
 **Dernière mise à jour :** 10 Avril 2026
