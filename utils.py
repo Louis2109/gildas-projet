@@ -125,7 +125,7 @@ def evaluate_array_factor_grid(
 
 
 # ============================================================================
-# CONTINUOUS SEARCH (To be implemented in Phase 3)
+# CONTINUOUS SEARCH (Phase 3 - Complete)
 # ============================================================================
 
 def find_max_angles(
@@ -197,8 +197,11 @@ def evaluate_array_factor_max(
 
 
 # ============================================================================
-# VISUALIZATION (To be implemented in Phase 5)
+# VISUALIZATION
 # ============================================================================
+# Phase 4: plot_array_factor_2d() - IMPLEMENTED
+# Phase 5: plot_convergence() - To be implemented
+# Phase 5+: plot_array_factor_3d(), plot_comparison() - Optional advanced features
 
 def plot_array_factor_2d(
     phi_mn_matrix: np.ndarray,
@@ -291,8 +294,8 @@ def plot_array_factor_3d(
         d, k: Physical parameters
         save_path: Path to save figure (optional)
     """
-    # TO BE IMPLEMENTED IN PHASE 5
-    raise NotImplementedError("Will be implemented in Phase 5")
+    # TO BE IMPLEMENTED IN PHASE 5 - Advanced Visualization
+    raise NotImplementedError("Will be implemented in Phase 5+")
 
 
 def plot_comparison(
@@ -311,8 +314,8 @@ def plot_comparison(
         d, k: Physical parameters
         save_path: Path to save figure (optional)
     """
-    # TO BE IMPLEMENTED IN PHASE 5
-    raise NotImplementedError("Will be implemented in Phase 5")
+    # TO BE IMPLEMENTED IN PHASE 5+
+    raise NotImplementedError("Will be implemented in Phase 5+")
 
 
 def plot_convergence(

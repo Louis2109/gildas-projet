@@ -23,10 +23,10 @@ from utils import (
 
 
 def test_array_factor():
-    """Quick validation of Array Factor computation (Phase 2a)"""
+    """Quick validation of Array Factor computation (Phase 2)"""
     
     print("\n" + "="*60)
-    print("  TESTING ARRAY FACTOR COMPUTATION (Phase 2a)")
+    print("  TESTING ARRAY FACTOR COMPUTATION (Phase 2)")
     print("="*60)
     
     # Test parameters
@@ -75,10 +75,10 @@ def test_array_factor():
 
 
 def test_continuous_search():
-    """Quick validation of Continuous Search (Phase 2b)"""
+    """Quick validation of Continuous Search (Phase 3)"""
     
     print("\n" + "="*60)
-    print("  TESTING CONTINUOUS SEARCH OPTIMIZATION (Phase 2b)")
+    print("  TESTING CONTINUOUS SEARCH OPTIMIZATION (Phase 3)")
     print("="*60)
     
     from utils import find_max_angles, compute_array_factor
@@ -153,10 +153,10 @@ def test_continuous_search():
 
 
 def test_visualization():
-    """Quick validation of 2D visualization (Phase 2c)"""
+    """Quick validation of 2D visualization (Phase 4)"""
     
     print("\n" + "="*60)
-    print("  TESTING 2D VISUALIZATION (Phase 2c)")
+    print("  TESTING 2D VISUALIZATION (Phase 4)")
     print("="*60)
     
     from utils import plot_array_factor_2d
@@ -229,20 +229,19 @@ def main():
     # Phase 2a: Test Array Factor
     matrix_test, af_grid, theta_range, phi_range = test_array_factor()
     
-    print("\n[Phase 2a Complete] Array Factor computation verified.")
+    print("\n[Phase 2 Complete] Array Factor computation verified.")
     
-    # Phase 2b: Test Continuous Search
+    # Phase 3: Test Continuous Search
     matrix_random, test_matrix = test_continuous_search()
     
-    print("\n[Phase 2b Complete] Continuous Search optimization verified.")
+    print("\n[Phase 3 Complete] Continuous Search optimization verified.")
     
-    # Phase 2c: Test Visualization
+    # Phase 4: Test Visualization
     plot_path, plot_path_zeros, plot_path_ones = test_visualization()
     
-    print("\n[Phase 2c Complete] 2D Visualization generated.")
-    print("\nNext phases:")
-    print("  - Phase 3: Genetic Algorithm Optimization Loop")
-    print("  - Phase 4: Convergence visualization and optimization results")
+    print("\n[Phase 4 Complete] 2D Visualization generated.")
+    print("\nNext phase:")
+    print("  - Phase 5: Genetic Algorithm Optimization Loop with Convergence Tracking")
 
 
 if __name__ == "__main__":

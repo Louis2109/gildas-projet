@@ -101,36 +101,36 @@ python3 utils.py
 - [x] Fonctions utilitaires (squelettes)
 - [x] Suite de tests (7/7 passing)
 - [x] Gestion de données (save/load)
+**Tests:** 7/7 passing ✓
 
-### ✅ Phase 2a : Calcul du Array Factor (Complete)
+### ✅ Phase 2 : Calcul du Array Factor (Complete)
 - [x] Implémentation de `compute_array_factor()` - Vectorisée NumPy
 - [x] Évaluation sur grille 2D avec `evaluate_array_factor_grid()`
 - [x] Tests de validation (5/5 passing)
 - [x] Démonstration dans antenna_optimizer.py
+**Tests:** 5/5 passing ✓
 
-### ✅ Phase 2b : Recherche Continue (Complete)
+### ✅ Phase 3 : Recherche Continue (Complete)
 - [x] Optimisation continue avec scipy.optimize.differential_evolution
 - [x] Fonction `find_max_angles()` - Trouve θ,φ optimal
 - [x] `evaluate_array_factor_max()` - Wrapper de commodité
 - [x] Tests de convergence et déterminisme (5/5 passing)
+**Tests:** 5/5 passing ✓
 
-### 🔄 Phase 2c : Visualisation 2D (Complete)
+### ✅ Phase 4 : Visualisation 2D (Complete)
 - [x] Implémentation de `plot_array_factor_2d()` avec Matplotlib
 - [x] 2D cuts : |f(θ)| vs θ et |f(φ)| vs φ
 - [x] Export PNG dans results/plots/
 - [x] Tests de validation (5/5 passing)
 **Tests:** 5/5 passing ✓
 
-### ⏳ Phase 3 : Optimisation GA (À venir)
+### ⏳ Phase 5 : Optimisation GA et Visualisation Simple (À venir)
 - [ ] Fonction fitness complète
 - [ ] Boucle principale GA.run()
 - [ ] Convergence tracking
+- [ ] Graphiques de convergence GA
+- [ ] Comparaisons avant/après simples
 - [ ] Tests d'optimisation
-
-### ⏳ Phase 4 : Visualisations Avancées (À venir)
-- [ ] Graphiques 3D sphériques
-- [ ] Comparaisons avant/après (side-by-side)
-- [ ] Courbes de convergence GA
 
 ---
 
@@ -180,17 +180,17 @@ Taux de croisement: 0.7
 - ✓ Opérateurs génétiques (sélection, croisement, mutation)
 - ✓ Sauvegarde/chargement de données
 
-**PHASE 2a (5/5 tests ✓):**
+**PHASE 2 (5/5 tests ✓):**
 - ✓ Calcul Array Factor single-point
 - ✓ Évaluation grille 2D
 - ✓ Cas tests (all-zeros, magnitude, consistency)
 
-**PHASE 2b (5/5 tests ✓):**
+**PHASE 3 (5/5 tests ✓):**
 - ✓ Recherche continue (find_max_angles)
 - ✓ Déterminisme et convergence
 - ✓ Comparaison avec grid search
 
-**PHASE 2c (5/5 tests ✓):**
+**PHASE 4 (5/5 tests ✓):**
 - ✓ Création fichiers PNG
 - ✓ Plots sans erreurs
 - ✓ Cas spéciaux (all-zeros, all-ones)
@@ -228,8 +228,8 @@ Projet académique - Usage éducatif uniquement
 
 ## 🔄 Statut du Projet
 
-**Phase actuelle :** Phase 3 - Algorithme Génétique Optimization Loop 🔄  
-**Progression :** 75% (Phase 1, 2a, 2b, 2c complètes / 4 phases restantes)  
+**Phase actuelle :** Phase 5 - Optimisation GA et Visualisation 🔄  
+**Progression :** 80% (Phase 1, 2, 3, 4 complètes / Phase 5 en cours)  
 **Tests globaux :** 22/22 passing ✓  
 **Workflow:** Code (Copilot) → Test (Utilisateur) → Validate → Commit
 

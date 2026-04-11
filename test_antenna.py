@@ -228,7 +228,7 @@ def test_array_factor_consistency():
 
 
 # ============================================================================
-# PHASE 2b TESTS: Continuous Search
+# PHASE 3 TESTS: Continuous Search
 # ============================================================================
 
 def test_find_max_angles_random_matrix():
@@ -325,7 +325,7 @@ def test_evaluate_array_factor_max():
 
 
 # ============================================================================
-# PHASE 2c TESTS: Visualization 2D
+# PHASE 4 TESTS: Visualization 2D
 # ============================================================================
 
 def test_plot_array_factor_2d_creates_file():
@@ -414,7 +414,7 @@ def test_plot_array_factor_2d_creates_plots_directory():
 
 
 # ============================================================================
-# PHASE 3 TESTS: GA Optimization (To be added)
+# PHASE 5 TESTS: GA Optimization (To be added)
 # ============================================================================
 
 def test_ga_run():
@@ -443,7 +443,7 @@ def run_all_tests():
         ("Data Save/Load", test_data_save_load),
     ]
     
-    phase2a_tests = [
+    phase2_tests = [
         ("Array Factor Computation", test_array_factor_computation),
         ("Array Factor All Zeros", test_array_factor_all_zeros),
         ("Array Factor Grid Evaluation", test_array_factor_grid),
@@ -451,7 +451,7 @@ def run_all_tests():
         ("Array Factor Consistency", test_array_factor_consistency),
     ]
     
-    phase2b_tests = [
+    phase3_tests = [
         ("Find Max Angles - Random", test_find_max_angles_random_matrix),
         ("Find Max Angles - All Zeros", test_find_max_angles_all_zeros),
         ("Find Max Angles vs Grid", test_find_max_angles_vs_grid),
@@ -459,7 +459,7 @@ def run_all_tests():
         ("Evaluate Array Factor Max", test_evaluate_array_factor_max),
     ]
     
-    phase2c_tests = [
+    phase4_tests = [
         ("Plot 2D - Creates File", test_plot_array_factor_2d_creates_file),
         ("Plot 2D - No Error", test_plot_array_factor_2d_no_error),
         ("Plot 2D - All Zeros", test_plot_array_factor_2d_all_zeros),
@@ -472,31 +472,31 @@ def run_all_tests():
     for test_name, test_func in phase1_tests:
         phase1_results.append(run_test(test_name, test_func))
     
-    print("\n[PHASE 2a TESTS - Array Factor]")
-    phase2a_results = []
-    for test_name, test_func in phase2a_tests:
-        phase2a_results.append(run_test(test_name, test_func))
+    print("\n[PHASE 2 TESTS - Array Factor]")
+    phase2_results = []
+    for test_name, test_func in phase2_tests:
+        phase2_results.append(run_test(test_name, test_func))
     
-    print("\n[PHASE 2b TESTS - Continuous Search]")
-    phase2b_results = []
-    for test_name, test_func in phase2b_tests:
-        phase2b_results.append(run_test(test_name, test_func))
+    print("\n[PHASE 3 TESTS - Continuous Search]")
+    phase3_results = []
+    for test_name, test_func in phase3_tests:
+        phase3_results.append(run_test(test_name, test_func))
     
-    print("\n[PHASE 2c TESTS - Visualization 2D]")
-    phase2c_results = []
-    for test_name, test_func in phase2c_tests:
-        phase2c_results.append(run_test(test_name, test_func))
+    print("\n[PHASE 4 TESTS - Visualization 2D]")
+    phase4_results = []
+    for test_name, test_func in phase4_tests:
+        phase4_results.append(run_test(test_name, test_func))
     
     # Summary
-    all_results = phase1_results + phase2a_results + phase2b_results + phase2c_results
+    all_results = phase1_results + phase2_results + phase3_results + phase4_results
     passed = sum(all_results)
     total = len(all_results)
     
     print("\n" + "="*60)
     print(f"PHASE 1: {sum(phase1_results)}/{len(phase1_results)} passed")
-    print(f"PHASE 2a: {sum(phase2a_results)}/{len(phase2a_results)} passed")
-    print(f"PHASE 2b: {sum(phase2b_results)}/{len(phase2b_results)} passed")
-    print(f"PHASE 2c: {sum(phase2c_results)}/{len(phase2c_results)} passed")
+    print(f"PHASE 2: {sum(phase2_results)}/{len(phase2_results)} passed")
+    print(f"PHASE 3: {sum(phase3_results)}/{len(phase3_results)} passed")
+    print(f"PHASE 4: {sum(phase4_results)}/{len(phase4_results)} passed")
     print(f"TOTAL: {passed}/{total} tests passed")
     
     if passed == total:
