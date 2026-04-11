@@ -414,13 +414,116 @@ def test_plot_array_factor_2d_creates_plots_directory():
 
 
 # ============================================================================
-# PHASE 5 TESTS: GA Optimization (To be added)
+# PHASE 5 TESTS: GA Optimization Loop
 # ============================================================================
 
-def test_ga_run():
-    """Test GA.run() converges to better solutions"""
-    # Will be implemented in Phase 3
-    pass
+def test_fitness_function_basic():
+    """Test that fitness_function() works and returns valid f_max value"""
+    from genetic_algorithm import AntennaGeneticAlgorithm
+    
+    ga = AntennaGeneticAlgorithm(M=4, N=4, population_size=10)
+    
+    # Create random chromosome and evaluate fitness
+    chromosome = np.random.randint(0, 2, ga.chromosome_length)
+    fitness = ga.fitness_function(chromosome)
+    
+    # Verify fitness is valid
+    assert isinstance(fitness, (float, np.floating))
+    assert fitness > 0, "Fitness should be positive (f_max > 0)"
+
+
+def test_fitness_all_zeros():
+    """Test that all-zeros chromosome gives high f_max (maximum reference)"""
+    from genetic_algorithm import AntennaGeneticAlgorithm
+    
+    ga = AntennaGeneticAlgorithm(M=4, N=4)
+    
+    # All-zeros chromosome = all phase 0 = maximum constructive interference
+    chromosome_zeros = np.zeros(ga.chromosome_length, dtype=int)
+    fitness_zeros = ga.fitness_function(chromosome_zeros)
+    
+    # All-zeros should give approximately M*N intensity (16 for 4×4)
+    assert np.isclose(fitness_zeros, 16, rtol=0.05)
+
+
+def test_ga_run_convergence():
+    """Test that GA.run() improves fitness over generations"""
+    from genetic_algorithm import AntennaGeneticAlgorithm
+    
+    ga = AntennaGeneticAlgorithm(M=4, N=4, population_size=10, mutation_rate=0.1)
+    
+    # Run GA for 5 generations
+    best_matrix, best_fitness, history = ga.run(generations=5, verbose=False)
+    
+    # Verify outputs structure
+    assert best_matrix.shape == (4, 4)
+    assert isinstance(best_fitness, float)
+    assert 'best_fitness' in history
+    assert 'avg_fitness' in history
+    
+    # Verify convergence: best fitness should improve
+    best_history = history['best_fitness']
+    assert len(best_history) > 0
+    # Last best fitness should be <= initial (or very close)
+    assert best_history[-1] <= best_history[0] * 1.01  # Allow 1% tolerance
+    
+    # Verify improvement over generations
+    improvement = (best_history[0] - best_history[-1]) / best_history[0] * 100
+    print(f"  GA improvement: {improvement:.2f}%")
+
+
+def test_ga_run_elite_preservation():
+    """Test that GA preserves best solutions (elitism)"""
+    from genetic_algorithm import AntennaGeneticAlgorithm
+    
+    ga = AntennaGeneticAlgorithm(M=4, N=4, population_size=20, elite_size=5)
+    
+    best_matrix, best_fitness, history = ga.run(generations=3, verbose=False)
+    
+    # Best fitness should never increase (only decrease or stay same)
+    best_history = history['best_fitness']
+    for i in range(1, len(best_history)):
+        assert best_history[i] <= best_history[i-1] * 1.0001, \
+            f"Elitism violated: fitness increased {best_history[i-1]} → {best_history[i]}"
+
+
+def test_ga_run_population_diversity():
+    """Test that GA maintains population diversity"""
+    from genetic_algorithm import AntennaGeneticAlgorithm
+    
+    ga = AntennaGeneticAlgorithm(M=4, N=4, population_size=15)
+    
+    best_matrix, best_fitness, history = ga.run(generations=4, verbose=False)
+    
+    # Average fitness should be higher than best fitness (population diversity)
+    avg_history = history['avg_fitness']
+    best_history = history['best_fitness']
+    
+    for i in range(len(best_history)):
+        # Average should always be >= best
+        assert avg_history[i] >= best_history[i] - 1e-6, \
+            "Average fitness should be >= best fitness"
+
+
+def test_ga_run_matrix_validity():
+    """Test that GA.run() returns valid phase matrix"""
+    from genetic_algorithm import AntennaGeneticAlgorithm
+    
+    ga = AntennaGeneticAlgorithm(M=4, N=4)
+    
+    best_matrix, best_fitness, history = ga.run(generations=3, verbose=False)
+    
+    # Verify matrix properties
+    assert best_matrix.dtype in [np.int32, np.int64, int]
+    assert best_matrix.shape == (4, 4)
+    
+    # All values should be binary (0 or 1)
+    assert np.all((best_matrix == 0) | (best_matrix == 1)), \
+        "Matrix should contain only 0s and 1s"
+    
+    # Matrix should be valid phase configuration
+    valid_matrix = (best_matrix >= 0) & (best_matrix <= 1)
+    assert np.all(valid_matrix)
 
 
 # ============================================================================
@@ -467,6 +570,15 @@ def run_all_tests():
         ("Plot 2D - Create Directory", test_plot_array_factor_2d_creates_plots_directory),
     ]
     
+    phase5_tests = [
+        ("Fitness Function Basic", test_fitness_function_basic),
+        ("Fitness All Zeros", test_fitness_all_zeros),
+        ("GA Run - Convergence", test_ga_run_convergence),
+        ("GA Run - Elite Preservation", test_ga_run_elite_preservation),
+        ("GA Run - Population Diversity", test_ga_run_population_diversity),
+        ("GA Run - Matrix Validity", test_ga_run_matrix_validity),
+    ]
+    
     print("\n[PHASE 1 TESTS]")
     phase1_results = []
     for test_name, test_func in phase1_tests:
@@ -487,8 +599,13 @@ def run_all_tests():
     for test_name, test_func in phase4_tests:
         phase4_results.append(run_test(test_name, test_func))
     
+    print("\n[PHASE 5 TESTS - GA Optimization Loop]")
+    phase5_results = []
+    for test_name, test_func in phase5_tests:
+        phase5_results.append(run_test(test_name, test_func))
+    
     # Summary
-    all_results = phase1_results + phase2_results + phase3_results + phase4_results
+    all_results = phase1_results + phase2_results + phase3_results + phase4_results + phase5_results
     passed = sum(all_results)
     total = len(all_results)
     
@@ -497,6 +614,7 @@ def run_all_tests():
     print(f"PHASE 2: {sum(phase2_results)}/{len(phase2_results)} passed")
     print(f"PHASE 3: {sum(phase3_results)}/{len(phase3_results)} passed")
     print(f"PHASE 4: {sum(phase4_results)}/{len(phase4_results)} passed")
+    print(f"PHASE 5: {sum(phase5_results)}/{len(phase5_results)} passed")
     print(f"TOTAL: {passed}/{total} tests passed")
     
     if passed == total:

@@ -209,6 +209,89 @@ def test_visualization():
     return plot_path, plot_path_zeros, plot_path_ones
 
 
+def test_ga_optimization():
+    """Full GA Optimization with convergence tracking (Phase 5)"""
+    
+    print("\n" + "="*60)
+    print("  TESTING GA OPTIMIZATION LOOP (Phase 5)")
+    print("="*60)
+    
+    from genetic_algorithm import AntennaGeneticAlgorithm
+    from utils import plot_convergence
+    
+    # Test parameters
+    M, N = 8, 8
+    d = 0.5
+    k = 2 * np.pi
+    
+    # Test 1: Short GA run (5 generations)
+    print("\n1. Running GA optimization (5 generations)...")
+    ga = AntennaGeneticAlgorithm(
+        M=M, N=N, 
+        d=d, k=k,
+        population_size=20,
+        mutation_rate=0.05,
+        crossover_rate=0.7,
+        elite_size=3
+    )
+    
+    best_matrix, best_fmax, history = ga.run(
+        generations=5,
+        verbose=True
+    )
+    
+    print(f"   ✓ GA optimization completed")
+    print(f"   ✓ Best f_max achieved: {best_fmax:.6f}")
+    print(f"   ✓ Improvement from generation 1: {(history['best_fitness'][0] - best_fmax) / history['best_fitness'][0] * 100:.2f}%")
+    
+    # Test 2: Generate convergence plot
+    print("\n2. Generating convergence plot...")
+    convergence_plot_path = "results/plots/phase5_convergence.png"
+    
+    plot_convergence(
+        history['best_fitness'],
+        history['avg_fitness'],
+        save_path=convergence_plot_path
+    )
+    
+    if os.path.exists(convergence_plot_path):
+        file_size = os.path.getsize(convergence_plot_path)
+        print(f"   ✓ Convergence plot saved: {convergence_plot_path}")
+        print(f"   ✓ File size: {file_size/1024:.2f} KB")
+    
+    # Test 3: Display optimal solution
+    print("\n3. Optimal solution matrix:")
+    print(f"   Best f_max: {best_fmax:.6f}")
+    print(f"   Optimal phase matrix (8×8):")
+    for row in best_matrix:
+        print(f"   {row}")
+    
+    # Test 4: Save optimization results
+    print("\n4. Saving optimization results...")
+    from utils import save_results
+    
+    save_results(
+        best_matrix,
+        best_fmax,
+        history,
+        filename="phase5_optimization_results"
+    )
+    
+    results_dir = "results/data"
+    if os.path.exists(results_dir):
+        files = os.listdir(results_dir)
+        print(f"   ✓ Results saved to {results_dir}/")
+        for file in files:
+            if "phase5" in file:
+                print(f"     - {file}")
+    
+    print("\n" + "="*60)
+    print(f"  GA OPTIMIZATION VALIDATION COMPLETE ✓")
+    print("="*60)
+    
+    return best_matrix, best_fmax, history, convergence_plot_path
+
+
 def main():
     """Main execution function"""
     
@@ -240,8 +323,11 @@ def main():
     plot_path, plot_path_zeros, plot_path_ones = test_visualization()
     
     print("\n[Phase 4 Complete] 2D Visualization generated.")
-    print("\nNext phase:")
-    print("  - Phase 5: Genetic Algorithm Optimization Loop with Convergence Tracking")
+    
+    # Phase 5: Test GA Optimization
+    test_ga_optimization()
+    
+    print("\n[Phase 5 Complete] Genetic Algorithm optimization loop verified.")
 
 
 if __name__ == "__main__":

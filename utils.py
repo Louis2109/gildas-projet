@@ -326,13 +326,61 @@ def plot_convergence(
     """
     Plot GA convergence (fitness evolution over generations)
     
+    Shows both best and average fitness across generations
+    Indicates optimization progress and convergence behavior
+    
     Args:
         best_fitness_history: Best fitness per generation
         avg_fitness_history: Average fitness per generation
         save_path: Path to save figure (optional)
     """
-    # TO BE IMPLEMENTED IN PHASE 5
-    raise NotImplementedError("Will be implemented in Phase 5")
+    if not best_fitness_history or not avg_fitness_history:
+        print("Warning: Empty fitness history, skipping convergence plot")
+        return
+    
+    generations = np.arange(1, len(best_fitness_history) + 1)
+    
+    # Create figure
+    fig, ax = plt.subplots(figsize=(12, 6))
+    
+    # Plot best fitness
+    ax.plot(generations, best_fitness_history, 'b-', linewidth=2.5, 
+            label='Best f_max', marker='o', markersize=3, alpha=0.7)
+    
+    # Plot average fitness
+    ax.plot(generations, avg_fitness_history, 'r--', linewidth=2, 
+            label='Average f_max', marker='s', markersize=3, alpha=0.6)
+    
+    # Fill between for visualization
+    ax.fill_between(generations, best_fitness_history, avg_fitness_history, 
+                     alpha=0.1, color='purple', label='Population Spread')
+    
+    # Formatting
+    ax.set_xlabel('Generation', fontsize=12, fontweight='bold')
+    ax.set_ylabel('f_max Value', fontsize=12, fontweight='bold')
+    ax.set_title('GA Convergence: Fitness Evolution Over Generations', 
+                 fontsize=13, fontweight='bold')
+    ax.grid(True, alpha=0.3, linestyle='--')
+    ax.legend(fontsize=11, loc='upper right')
+    
+    # Add statistics box
+    best_final = best_fitness_history[-1]
+    best_initial = best_fitness_history[0]
+    improvement = (best_initial - best_final) / best_initial * 100
+    
+    stats_text = f'Best: {best_final:.4f}\nInitial: {best_initial:.4f}\nImprovement: {improvement:.1f}%'
+    ax.text(0.02, 0.98, stats_text, transform=ax.transAxes,
+            fontsize=10, verticalalignment='top',
+            bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
+    
+    plt.tight_layout()
+    
+    # Save if path provided
+    if save_path:
+        os.makedirs(os.path.dirname(save_path) if os.path.dirname(save_path) else '.', exist_ok=True)
+        plt.savefig(save_path, dpi=150, bbox_inches='tight')
+    
+    plt.close()
 
 
 # ============================================================================
