@@ -10,6 +10,7 @@ Author: Gildas Project Team
 Date: March 2026
 """
 
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 from genetic_algorithm import AntennaGeneticAlgorithm
