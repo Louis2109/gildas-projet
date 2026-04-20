@@ -2,10 +2,20 @@ Tu es mon copilot, mon assistant, toi tu gere le code, moi la structure et les v
 
 Stp respecte le #file:README.md que nous avons etablis au depqrt, c'est unpeu comme notre cahier de chage, update lors de la progression, pour marquer l'etat de notre avancement.
 
-Tous les tests ont reussis, update le fichier #file:README.md . Chaque que fois qu'on effectue des modifications important ou validation de step, donne moi toujours les commandes gits pour save. 
-Nous avons compresser le projet en zip et envoyer part adresse mail. 
+---
 
-Je penses qu'on devrait ajouter la visualisation 2D et 3D, dans notre demarche, qu'est ce que tu en penses ? Nous avons achever le projet en 2D et sa marche, dis moi comment nous pouvons introduire aussi la 3D sans casser ce qui marche deja. Dis simpliment comment on peut proceder, je vais examiner ce que tu dis et voir si faisable. 
+Excellent travail. J'aime beaucoup ce que tu as repondus. 
+
+J'ai telecharger l'extention "Markdown pdf" sur mon vscode. Regarde unpeu comment j'ai convertis #file:course_Genetic_Algorithm.md  en #file:course1.pdf garce a cette extention. 
+Je veux que tu m'aide a monter le fichier presentation.md qui sera convertis en pdf. Nous allons introduire les imagea a l'interieur, je veux que apres export en pdf, le doc presentation soit bien presentable avec du style. Peut-on utiliser les <img src="votre_image.png" width="400> pour redimentionner et styler les images afin entrent bien sur les pages ?
+ 
 
 
 ###### Ask chatgpt de de donner le github-copilot.md pour les process travaux. 
+
+
+page5 - etape1 - git clone github...
+page6 - text qui explique chaque phase posant ...
+
+
+
