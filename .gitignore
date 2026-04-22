@@ -1,0 +1,10 @@
+# Fichiers de travail personnel (ne pas partager)
+docs/presentation.md
+docs/github-copilot.md
+docs/text.md
+docs/*.pdf
+
+# Ou avec des patterns:
+docs/presentation*.md
+docs/text*.md
+docs/*-copilot.md
